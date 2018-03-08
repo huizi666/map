@@ -1,0 +1,129 @@
+<!doctype html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="chrome=1">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+	<style type="text/css">
+		body,
+		html,
+		#container {
+			height: 100%;
+			margin: 0px;
+		}
+	</style>
+	<title>快速入门</title>
+</head>
+
+<body>
+	<input type="button" class="button" value="开始编辑折线" onClick="startEditLine()" />
+	<input type="button" class="button" value="结束编辑折线" onClick="closeEditLine()" />
+	<div id="container" tabindex="0"></div>
+	<div id="panel" style="position: fixed;right: 0;top: 0;"></div>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.4&key=ef42fbd3d4b3676cf2f33745f98d0197&plugin=AMap.Transfer"></script>
+	<script type="text/javascript">
+		//地铁站线路
+		var LineList = []
+		//基础地图构建
+		var map = new AMap.Map('container', {
+			resizeEnable: true,
+			zoom: 12,
+			center: [116.397573, 39.908743]
+		});
+		map.setMapStyle('amap://styles/8c687c6bbb79c87904d211e81ebc0dee');
+		//公交站点----1号线
+		var _line1 =[]
+		,line1 = ['苹果园','古城','八角游乐园','八宝山','玉泉路','五棵松','万寿路','公主坟','军事博物馆','木樨地','南礼士路','复兴门','西单','天安门西','天安门东','王府井','东单','建国门','永安里','国贸','大望路','四惠','四惠东']
+		//增加地铁站后缀
+		var flag = 1
+		for(var i = 0, len = line1.length; i < len; i++){
+			_line1.push(line1[i]+'地铁站')
+		}
+		for(var i = 0, len = _line1.length; i < len; i++){
+			outPut(_line1[i],_line1[i+1])
+		}
+		//路线line生成
+		function outPut(orig,des){
+			//公交线路查询--基本配置
+			var transOptions = {
+				//map: map,
+				city: '北京市',
+				panel: 'panel',
+				//cityd:'乌鲁木齐',
+				policy: AMap.TransferPolicy.LEAST_TIME,
+			};
+			var lineList = []
+			//构造公交换乘类
+			var transfer = new AMap.Transfer(transOptions);
+			//根据起、终点坐标查询公交换乘路线
+			transfer.search([{
+				keyword: orig//"苹果园地铁站"//orig
+			}, {
+				keyword: des//"古城地铁站"//des
+			}], function(status, result) {
+				var plans = result.plans
+				//plans
+					console.log(plans)
+				
+				for(var i = 0, len = plans.length; i < len; i++) {
+					console.log(plans[i])
+					//path -- segments
+					if(plans[i].segments){
+						for(var j = 0, len = plans[i].segments.length; j < len; j++) {
+							if(plans[i].segments[j].transit_mode === 'SUBWAY') {
+								console.log(plans[i].segments[j].transit_mode)
+								console.log(plans[i].path)
+								
+								lineList = plans[i].segments[j].transit.path
+								console.log(lineList)
+							}
+						}
+					}
+					
+				}
+				//合规的描点数据
+				for(var item = 0, len = lineList.length; item < len; item++) {
+					LineList.push([lineList[item].lng, lineList[item].lat])
+				}
+				console.log(flag++)
+				
+			});
+		}
+		
+		var t = setTimeout(function() {
+			//折现
+			var editor = {};
+			editor._line = function() {
+				var lineArr = [
+					//	            [116.42403221064,39.983271740814],
+					//	            [116.42403221064,39.983271740814],
+					//	            [116.42396932925,39.984370524385],
+					//	            [116.417028, 39.987836]
+				];
+				return new AMap.Polyline({
+					map: map, //要显示该polyline的地图对象
+					path: LineList, //折线的节点坐标数组
+					strokeColor: "#FF33FF", //线颜色
+					strokeOpacity: 1, //线透明度
+					strokeWeight: 3, //线宽
+					strokeStyle: "solid", //线样式
+					lineCap: "round", //折线两端线帽的绘制样式，默认值为'butt'无头，其他可选值：'round'圆头、'square'方头
+					draggable: false, //设置折线是否可拖拽移动，默认为false
+
+				});
+			};
+			editor._line()
+			map.setFitView();
+			//editor._lineEditor= new AMap.PolyEditor(map, editor._line);
+			//开始 结束 折现编辑
+			//		    function startEditLine(){
+			//			        editor._lineEditor.open();
+			//			    }
+			//			  function closeEditLine(){
+			//			        editor._lineEditor.close();
+			//			    }
+		}, 2000)
+	</script>
+</body>
+
+</html>
