@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+//		var xhr = new XMLHttpRequest();
+////设置请求的类型及url
+////post请求一定要添加请求头才行不然会报错
+//xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//xhr.open('post', 'http://192.168.10.223:8081/excel/downloadExcel/7' );
+////发送请求
+//xhr.send('');
+//xhr.onreadystatechange = function () {
+//// 这步为判断服务器是否正确响应
+//if (xhr.readyState == 4 && xhr.status == 200) {
+//console.log(xhr.responseText);
+//}
+//};
+function downFile(blob, fileName) {
+          if (window.navigator.msSaveOrOpenBlob) {
+              navigator.msSaveBlob(blob, fileName);
+          } else {
+              var link = document.createElement('a');
+              link.href = window.URL.createObjectURL(blob);
+              link.download = '';
+              link.click();
+              window.URL.revokeObjectURL(link.href);
+          }
+      }
+$.ajax({
+	type:"get",
+	url:"http://192.168.10.223:8081/excel/downloadExcel/7",
+	success:function(response){
+		console.log(response)
+		
+//		downFile(blob, fileName);
+//		var blob = new Blob([response.body]),fileName = '文件名称';
+	}
+});
+	</script>
+</html>

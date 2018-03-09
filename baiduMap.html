@@ -1,0 +1,86 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=F9S7N9GfhoukfD6rGehm8phoiXwcWh5Q"></script>
+    <title>Baidu Map </title>  
+    <style type="text/css">  
+        html{height:100%}  
+        body{height:100%;margin:0px;padding:0px}  
+        #container{height:100%}  
+    </style>  
+</head>  
+<body>
+	<div id="container">
+		
+	</div>
+	<script type="text/javascript">
+		var jsons = [
+          {
+                    "featureType": "manmade",
+                    "elementType": "all",
+                    "stylers": {
+                              "lightness": 10,
+                              "saturation": -100,
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "highway",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "arterial",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "local",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "railway",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "subway",
+                    "elementType": "all",
+                    "stylers": {}
+          },
+          {
+                    "featureType": "subway",
+                    "elementType": "all",
+                    "stylers": {
+                              "weight": "0.9",
+                              "visibility": "on"
+                    }
+          },
+          {
+                    "featureType": "green",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#7dabb3ff",
+                              "visibility": "off"
+                    }
+          }
+];
+		var map = new BMap.Map("container");          // 创建地图实例  
+		var point = new BMap.Point(121.483414,31.236176);  // 创建点坐标  
+		map.centerAndZoom(point, 15);                 // 初始化地图，设置中心点坐标和地图级别  
+		map.enableScrollWheelZoom(true);  
+		map.setMapStyle({styleJson:jsons});
+	</script>
+</body>  
+</html>

@@ -36,12 +36,18 @@
 		,line1 = ['苹果园','古城','八角游乐园','八宝山','玉泉路','五棵松','万寿路','公主坟','军事博物馆','木樨地','南礼士路','复兴门','西单','天安门西','天安门东','王府井','东单','建国门','永安里','国贸','大望路','四惠','四惠东']
 		//增加地铁站后缀
 		var flag = 1
-		for(var i = 0, len = line1.length; i < len; i++){
+		for(var i = 0; i < line1.length; i++){
 			_line1.push(line1[i]+'地铁站')
 		}
-		for(var i = 0, len = _line1.length; i < len; i++){
-			outPut(_line1[i],_line1[i+1])
+		for(var i = 0; i < _line1.length; i++){
+			if(i < _line1.length-1){
+				//outPut(_line1[i],_line1[i+1])				
+			}
 		}
+//		for(var [keys, value] of _line1){
+//			console.log(keys)
+//			console.log(value)
+//		}
 		//路线line生成
 		function outPut(orig,des){
 			//公交线路查询--基本配置
@@ -65,11 +71,11 @@
 				//plans
 					console.log(plans)
 				
-				for(var i = 0, len = plans.length; i < len; i++) {
+				for(var i = 0; i < plans.length; i++) {
 					console.log(plans[i])
 					//path -- segments
 					if(plans[i].segments){
-						for(var j = 0, len = plans[i].segments.length; j < len; j++) {
+						for(var j = 0; j < plans[i].segments.length; j++) {
 							if(plans[i].segments[j].transit_mode === 'SUBWAY') {
 								console.log(plans[i].segments[j].transit_mode)
 								console.log(plans[i].path)
@@ -82,7 +88,7 @@
 					
 				}
 				//合规的描点数据
-				for(var item = 0, len = lineList.length; item < len; item++) {
+				for(var item = 0; item < lineList.length; item++) {
 					LineList.push([lineList[item].lng, lineList[item].lat])
 				}
 				console.log(flag++)
@@ -112,7 +118,7 @@
 
 				});
 			};
-			editor._line()
+//			editor._line()
 			map.setFitView();
 			//editor._lineEditor= new AMap.PolyEditor(map, editor._line);
 			//开始 结束 折现编辑
