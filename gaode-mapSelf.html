@@ -16,12 +16,19 @@
 </head>
 
 <body>
-	<input type="button" class="button" value="开始编辑折线" onClick="startEditLine()" />
-	<input type="button" class="button" value="结束编辑折线" onClick="closeEditLine()" />
+	<input type="text" name="" id="" value="" placeholder="请输入站点" />
+	<button onclick="outputLine()">生成</button>
 	<div id="container" tabindex="0"></div>
-	<div id="panel" style="position: fixed;right: 0;top: 0;"></div>
 	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.4&key=ef42fbd3d4b3676cf2f33745f98d0197&plugin=AMap.Transfer"></script>
 	<script type="text/javascript">
+		//回车
+		document.onkeydown=function(event){
+            var e = event || window.event || arguments.callee.caller.arguments[0];           
+             if(e && e.keyCode==13){ // enter 键
+                 //要做的事情
+                 lineSearch()
+            }
+        }; 
 		//地铁站线路
 		var LineList = []
 		//基础地图构建
@@ -32,71 +39,46 @@
 		});
 		map.setMapStyle('amap://styles/8c687c6bbb79c87904d211e81ebc0dee');
 		//公交站点----1号线
-		var _line1 =[]
-		,line1 = ['苹果园','古城','八角游乐园','八宝山','玉泉路','五棵松','万寿路','公主坟','军事博物馆','木樨地','南礼士路','复兴门','西单','天安门西','天安门东','王府井','东单','建国门','永安里','国贸','大望路','四惠','四惠东']
+		var _line1 = [],
+			_line2 = [],
+			_line10 = [],
+			_line4 = [],
+			line1 = ['苹果园', '古城', '八角游乐园', '八宝山', '玉泉路', '五棵松', '万寿路', '公主坟', '军事博物馆', '木樨地', '南礼士路', '复兴门', '西单', '天安门西', '天安门东', '王府井', '东单', '建国门地铁站', '永安里', '国贸', '大望路', '四惠', '四惠东'],
+			line10 = ['巴沟', '苏州街', '海淀黄庄', '知春里', '知春路', '西土城', '牡丹园', '健德门', '北土城', '安贞门', '惠新西街南口', '芍药居', '太阳宫', '三元桥', '亮马桥', '农业展览馆', '团结湖', '呼家楼', '金台夕照', '国贸', '双井', '劲松', '潘家园', '十里河', '分钟寺', '成寿寺', '宋家庄', '石榴庄', '大红门', '角门东', '角门西', '草桥', '纪家庙', '首经贸', '丰台站地铁站', '泥洼', '西局', '六里桥', '莲花桥', '公主坟', '西钓鱼台', '慈寿寺', '车道沟', '长春桥', '火器营', '巴沟'],
+			line2 = ['积水潭', '鼓楼大街', '安定门', '雍和宫', '东直门', '东四十条', '朝阳门', '建国门', '北京站', '崇文门', '前门', '和平门', '宣武门', '长椿街', '复兴门', '阜成门', '车公庄', '西直门', '积水潭'],
+			line4 = ['安河桥北', '北宫门', '西苑', '圆明园', '北京大学东门', '中关村', '海淀黄庄', '人民大学', '魏公村', '国家图书馆', '动物园', '西直门', '新街口', '平安里', '西四', '灵境胡同', '西单', '宣武门', '菜市口', '陶然亭', '北京南站', '马家堡', '角门西', '公益西桥', '新宫', '西红门', '高米店北', '高米店南', '枣园', '清源路', '黄村西大街', '黄村火车站', '义和庄', '生物医药基地', '天宫院']
 		//增加地铁站后缀
 		var flag = 1
-		for(var i = 0; i < line1.length; i++){
-			_line1.push(line1[i]+'地铁站')
+		for(var i = 0; i < line1.length; i++) {
+			_line1.push(line1[i] + '地铁站')
 		}
-		for(var i = 0; i < _line1.length; i++){
-			if(i < _line1.length-1){
-				//outPut(_line1[i],_line1[i+1])				
+		for(var i = 0; i < line2.length; i++) {
+			_line2.push(line2[i] + '地铁站')
+		}
+		for(var i = 0; i < line10.length; i++) {
+			_line10.push(line10[i] + '地铁站')
+		}
+		for(var i = 0; i < line4.length; i++) {
+			_line4.push(line4[i] + '地铁站')
+		}
+		for(var i = 0; i < _line1.length; i++) {
+			if(i < _line1.length - 1) {
+				//				outPut(_line1[i],_line1[i+1])				
 			}
 		}
-//		for(var [keys, value] of _line1){
-//			console.log(keys)
-//			console.log(value)
-//		}
+		var i = 0
+		//		outPut('南礼士路地铁站','复兴门地铁站')
+
+		outPut(_line4[i], _line4[i + 1])
+
+		//		for(var [keys, value] of _line1){
+		//			console.log(keys)
+		//			console.log(value)
+		//		}
 		//路线line生成
-		function outPut(orig,des){
-			//公交线路查询--基本配置
-			var transOptions = {
-				//map: map,
-				city: '北京市',
-				panel: 'panel',
-				//cityd:'乌鲁木齐',
-				policy: AMap.TransferPolicy.LEAST_TIME,
-			};
-			var lineList = []
-			//构造公交换乘类
-			var transfer = new AMap.Transfer(transOptions);
-			//根据起、终点坐标查询公交换乘路线
-			transfer.search([{
-				keyword: orig//"苹果园地铁站"//orig
-			}, {
-				keyword: des//"古城地铁站"//des
-			}], function(status, result) {
-				var plans = result.plans
-				//plans
-					console.log(plans)
-				
-				for(var i = 0; i < plans.length; i++) {
-					console.log(plans[i])
-					//path -- segments
-					if(plans[i].segments){
-						for(var j = 0; j < plans[i].segments.length; j++) {
-							if(plans[i].segments[j].transit_mode === 'SUBWAY') {
-								console.log(plans[i].segments[j].transit_mode)
-								console.log(plans[i].path)
-								
-								lineList = plans[i].segments[j].transit.path
-								console.log(lineList)
-							}
-						}
-					}
-					
-				}
-				//合规的描点数据
-				for(var item = 0; item < lineList.length; item++) {
-					LineList.push([lineList[item].lng, lineList[item].lat])
-				}
-				console.log(flag++)
-				
-			});
-		}
-		
-		var t = setTimeout(function() {
+		function outPut(orig, des) {
+			console.log(orig)
+			console.log(des)
 			//折现
 			var editor = {};
 			editor._line = function() {
@@ -106,29 +88,95 @@
 					//	            [116.42396932925,39.984370524385],
 					//	            [116.417028, 39.987836]
 				];
-				return new AMap.Polyline({
-					map: map, //要显示该polyline的地图对象
-					path: LineList, //折线的节点坐标数组
-					strokeColor: "#FF33FF", //线颜色
-					strokeOpacity: 1, //线透明度
-					strokeWeight: 3, //线宽
-					strokeStyle: "solid", //线样式
-					lineCap: "round", //折线两端线帽的绘制样式，默认值为'butt'无头，其他可选值：'round'圆头、'square'方头
-					draggable: false, //设置折线是否可拖拽移动，默认为false
+				if(LineList !== []) {
+					new AMap.Polyline({
+						map: map, //要显示该polyline的地图对象
+						path: lineList, //折线的节点坐标数组
+						strokeColor: "#FF33FF", //线颜色
+						strokeOpacity: 1, //线透明度
+						strokeWeight: 1, //线宽
+						strokeStyle: "solid", //线样式
+						lineCap: "round", //折线两端线帽的绘制样式，默认值为'butt'无头，其他可选值：'round'圆头、'square'方头
+						draggable: false, //设置折线是否可拖拽移动，默认为false
 
-				});
+					});
+					console.log(line4.length)
+					if(i < (_line4.length - 2)) {
+						i++
+						outPut(_line4[i], _line4[i + 1])
+
+					} else if(i == _line4.length) {
+						finished = true
+					}
+				}
+
 			};
-//			editor._line()
-			map.setFitView();
-			//editor._lineEditor= new AMap.PolyEditor(map, editor._line);
-			//开始 结束 折现编辑
-			//		    function startEditLine(){
-			//			        editor._lineEditor.open();
-			//			    }
-			//			  function closeEditLine(){
-			//			        editor._lineEditor.close();
-			//			    }
-		}, 2000)
+			//公交线路查询--基本配置
+			var transOptions = {
+				//map: map,
+				city: '北京市',
+				//				panel: 'panel',
+				//cityd:'乌鲁木齐',
+				policy: AMap.TransferPolicy.LEAST_TRANSFER,
+			};
+			var lineList = []
+			//构造公交换乘类
+			var transfer = new AMap.Transfer(transOptions);
+			//根据起、终点坐标查询公交换乘路线
+			transfer.search([{
+				keyword: orig //"苹果园地铁站"//orig
+			}, {
+				keyword: des //"古城地铁站"//des
+			}], function(status, result) {
+				var plans = result.plans
+				//plans
+				console.log(result)
+				//					console.log(plans)
+				if(status === 'complete' && result.info === 'OK') {
+					for(var i = 0; i < plans.length; i++) {
+						//path -- segments
+						if(!plans[i].segments) {
+							alert(plans[i].segments)
+						}
+						if(plans[i].segments) {
+							for(var j = 0; j < plans[i].segments.length; j++) {
+								if(plans[i].segments[j].transit_mode === 'SUBWAY') {
+									//									console.log(plans[i].segments[j].transit_mode)
+									//									console.log(plans[i].path)
+
+									//									lineList = plans[i].segments[j].transit.path
+									//									console.log(lineList)
+									//合规的描点数据
+									for(var item = 0; item < plans[i].segments[j].transit.path.length; item++) {
+										lineList.push([plans[i].segments[j].transit.path[item].lng, plans[i].segments[j].transit.path[item].lat])
+									}
+									//合规的描点数据-----集合
+									for(var item = 0; item < lineList.length; item++) {
+										LineList.push([lineList[item].lng, lineList[item].lat])
+									}
+									editor._line()
+									return
+
+								}
+							}
+						}
+
+					}
+				}
+
+				console.log(flag++)
+
+			});
+		}
+
+		//editor._lineEditor= new AMap.PolyEditor(map, editor._line);
+		//开始 结束 折现编辑
+		//		    function startEditLine(){
+		//			        editor._lineEditor.open();
+		//			    }
+		//			  function closeEditLine(){
+		//			        editor._lineEditor.close();
+		//			    }
 	</script>
 </body>
 
