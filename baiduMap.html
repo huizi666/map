@@ -8,7 +8,7 @@
     <style type="text/css">  
         html{height:100%}  
         body{height:100%;margin:0px;padding:0px}  
-        #container{height:100%}  
+        #container{height:400px;width: 400px;}  
     </style>  
 </head>  
 <body>
@@ -116,7 +116,7 @@
 		map.setMapStyle({styleJson:jsons});  
 		var item = 0,GPSsets=[],GPSset=[]
 		outPut(_line10[item],_line10[item+1])
-	function outPut (start,end){
+		function outPut (start,end){
 			console.log(start)
 			console.log(end)
 			var start = start;
@@ -129,8 +129,8 @@
 					if (transit.getStatus() == BMAP_STATUS_SUCCESS){
 						var firstPlan = result.getPlan(0);
 						// 绘制公交线路
-//						console.log(result.getNumPlans())
-//						console.log(firstPlan.getNumLines())
+	//						console.log(result.getNumPlans())
+	//						console.log(firstPlan.getNumLines())
 						for (i = 0; i < firstPlan.getNumLines(); i++){
 							var line = firstPlan.getLine(i);
 							console.log(line.getPath())
@@ -143,14 +143,14 @@
 						var s = [];
 						for (i = 0; i < result.getNumPlans(); i++){
 	//						s.push((i + 1) + ". " + result.getPlan(i).getDescription(false));
-//							console.log( result.getPlan(i))
+	//							console.log( result.getPlan(i))
 						}
 	//					console.log(s)
 						if(item < (_line10.length - 2)) {
 							item++
-//							console.log(_line1.length)
-//							console.log(item)
-//							console.log(item+1)
+	//							console.log(_line1.length)
+	//							console.log(item)
+	//							console.log(item+1)
 							outPut(_line10[item], _line10[item + 1])
 	
 						}
@@ -159,7 +159,7 @@
 				}
 			});
 			transit.search(start,end);
-	}
+		}
 	console.log(GPSsets)
 	console.log(GPSset)
 	</script>

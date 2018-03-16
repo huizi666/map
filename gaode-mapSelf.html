@@ -72,30 +72,25 @@
 		var i = 0
 		//		outPut('南礼士路地铁站','复兴门地铁站')
 
-		outPut(_line1[i], _line1[i + 1])
+		outPut(_line10[i], _line10[i + 1])
 
 		//		for(var [keys, value] of _line1){
 		//			console.log(keys)
 		//			console.log(value)
 		//		}
 		//路线line生成
+		var lineList = []
 		function outPut(orig, des) {
 			console.log(orig)
 			console.log(des)
 			//折现
 			var editor = {};
-			editor._line = function() {
-				var lineArr = [
-					//	            [116.42403221064,39.983271740814],
-					//	            [116.42403221064,39.983271740814],
-					//	            [116.42396932925,39.984370524385],
-					//	            [116.417028, 39.987836]
-				];
+			editor._line = function(LineList) {
 				if(LineList !== []) {
 					new AMap.Polyline({
 						map: map, //要显示该polyline的地图对象
 						path: lineList, //折线的节点坐标数组
-						strokeColor: "#FF33FF", //线颜色
+						strokeColor: "black", //线颜色
 						strokeOpacity: 1, //线透明度
 						strokeWeight: 1, //线宽
 						strokeStyle: "solid", //线样式
@@ -103,12 +98,18 @@
 						draggable: false, //设置折线是否可拖拽移动，默认为false
 
 					});
-					console.log(line1.length)
-					if(i < (_line1.length - 2)) {
+					console.log(line10.length)
+					if(i < (_line10.length - 2)) {
+						console.log(i)
+						
 						i++
-						outPut(_line1[i], _line1[i + 1])
-
-					} else if(i == _line1.length) {
+						console.log(i)
+						outPut(_line10[i], _line10[i + 1])
+	
+					} else if(i == (_line10.length-2)) {
+						console.log(i+'6666666666666666666666666666666')
+						console.log(lineList)
+						console.log(LineList)
 						finished = true
 					}
 				}
@@ -122,7 +123,6 @@
 				//cityd:'乌鲁木齐',
 				policy: AMap.TransferPolicy.LEAST_TRANSFER,
 			};
-			var lineList = []
 			//构造公交换乘类
 			var transfer = new AMap.Transfer(transOptions);
 			//根据起、终点坐标查询公交换乘路线
@@ -150,14 +150,29 @@
 									//									lineList = plans[i].segments[j].transit.path
 									//									console.log(lineList)
 									//合规的描点数据
-									for(var item = 0; item < plans[i].segments[j].transit.path.length; item++) {
-										lineList.push([plans[i].segments[j].transit.path[item].lng, plans[i].segments[j].transit.path[item].lat])
-									}
+									plans[i].segments[j].transit.path.forEach(function(value, index, arr) {
+									  // ...
+									  console.log(value)
+									  console.log(index)
+									  console.log(arr)
+									  console.log(arr[index])
+									  console.log(typeof arr[index])
+									  lineList.push([value.lng, value.lat])
+									})
+//									for(var item = 0; item < plans[i].segments[j].transit.path.length; item++) {
+//										console.log(plans[i].segments[j].transit.path.length)
+////										if(item == 0){
+////											lineList.push([plans[i].segments[j].transit.path[0].lng, plans[i].segments[j].transit.path[0].lat])											
+////										}
+//										
+//									}
+//									console.log(lineList)
 									//合规的描点数据-----集合
-									for(var item = 0; item < lineList.length; item++) {
-										LineList.push([lineList[item].lng, lineList[item].lat])
+									for(var keys = 0; keys < lineList.length; keys++) {
+										LineList.push([lineList[keys].lng, lineList[keys].lat])
+										
 									}
-									editor._line()
+									editor._line(lineList)
 									return
 
 								}
@@ -172,6 +187,7 @@
 			});
 		}
 
+					setTimeout(console.log(LineList),8000)
 		//editor._lineEditor= new AMap.PolyEditor(map, editor._line);
 		//开始 结束 折现编辑
 		//		    function startEditLine(){
