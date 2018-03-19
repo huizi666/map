@@ -8,7 +8,7 @@
     <style type="text/css">  
         html{height:100%}  
         body{height:100%;margin:0px;padding:0px}  
-        #container{height:400px;width: 400px;}  
+        #container{height:1400px;width: 1400px;}  
     </style>  
 </head>  
 <body>
@@ -111,7 +111,7 @@
 ];
 
 		var map = new BMap.Map("container");         
-		map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
+		map.centerAndZoom(new BMap.Point(116.404, 39.915), 13);
 		map.enableScrollWheelZoom(true);  
 		map.setMapStyle({styleJson:jsons});  
 		var item = 0,GPSsets=[],GPSset=[]
@@ -119,6 +119,7 @@
 		function outPut (start,end){
 			console.log(start)
 			console.log(end)
+			var line = ''
 			var start = start;
 			var end = end;
 			var routePolicy = [BMAP_TRANSIT_POLICY_LEAST_TIME,BMAP_TRANSIT_POLICY_LEAST_TRANSFER,BMAP_TRANSIT_POLICY_LEAST_WALKING,BMAP_TRANSIT_POLICY_AVOID_SUBWAYS];
@@ -129,39 +130,34 @@
 					if (transit.getStatus() == BMAP_STATUS_SUCCESS){
 						var firstPlan = result.getPlan(0);
 						// 绘制公交线路
-	//						console.log(result.getNumPlans())
-	//						console.log(firstPlan.getNumLines())
 						for (i = 0; i < firstPlan.getNumLines(); i++){
-							var line = firstPlan.getLine(i);
+							line = firstPlan.getLine(i);
 							console.log(line.getPath())
-							GPSsets.push(start+'-'+end, line.getPath())
-							GPSset.push(line.getPath())
-							map.addOverlay(new BMap.Polyline(line.getPath())
-							,{strokeColor:"pink", strokeWeight:1, strokeOpacity:0.5});
+							GPSsets.push(line.getPath())
+						 
 						}
-						// 输出方案信息
-						var s = [];
-						for (i = 0; i < result.getNumPlans(); i++){
-	//						s.push((i + 1) + ". " + result.getPlan(i).getDescription(false));
-	//							console.log( result.getPlan(i))
-						}
-	//					console.log(s)
-						if(item < (_line10.length - 2)) {
-							item++
-	//							console.log(_line1.length)
-	//							console.log(item)
-	//							console.log(item+1)
-							outPut(_line10[item], _line10[item + 1])
-	
-						}
+					console.log(_line10.length)
+					if(item < (_line10.length - 2)) {
+						++item
+						outPut(_line10[item], _line10[item + 1])
+					}else if(item == (_line10.length - 2)){
+						GPSsets.forEach(function(val,idx,GPSsets){
+							GPSsets[idx].forEach(function(val,idx,gpsset){
+								GPSset.push(gpsset[idx])
+							})
+						})
+						var polyline = new BMap.Polyline(GPSset
+						, {strokeColor:"pink", strokeWeight:1, strokeOpacity:1});   //创建折线
+						map.addOverlay(polyline);
 						return
+					}
 					}
 				}
 			});
 			transit.search(start,end);
+			 
 		}
-	console.log(GPSsets)
-	console.log(GPSset)
+
 	</script>
 </body>  
 </html>

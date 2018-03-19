@@ -48,10 +48,9 @@
 			line2 = ['积水潭', '鼓楼大街', '安定门', '雍和宫', '东直门', '东四十条', '朝阳门', '建国门', '北京站', '崇文门', '前门', '和平门', '宣武门', '长椿街', '复兴门', '阜成门', '车公庄', '西直门', '积水潭'],
 			line4 = ['安河桥北', '北宫门', '西苑', '圆明园', '北京大学东门', '中关村', '海淀黄庄', '人民大学', '魏公村', '国家图书馆', '动物园', '西直门', '新街口', '平安里', '西四', '灵境胡同', '西单', '宣武门', '菜市口', '陶然亭', '北京南站', '马家堡', '角门西', '公益西桥', '新宫', '西红门', '高米店北', '高米店南', '枣园', '清源路', '黄村西大街', '黄村火车站', '义和庄', '生物医药基地', '天宫院']
 		//增加地铁站后缀
-		var flag = 1
+//		var flag = 1
 		for(var i = 0; i < line1.length; i++) {
 			if(line1[i] !== '南礼士路'){
-				
 				_line1.push(line1[i] + '地铁站')
 			}
 		}
@@ -63,11 +62,6 @@
 		}
 		for(var i = 0; i < line4.length; i++) {
 			_line4.push(line4[i] + '地铁站')
-		}
-		for(var i = 0; i < _line1.length; i++) {
-			if(i < _line1.length - 1) {
-				//				outPut(_line1[i],_line1[i+1])				
-			}
 		}
 		var i = 0
 		//		outPut('南礼士路地铁站','复兴门地铁站')
@@ -102,8 +96,8 @@
 					if(i < (_line10.length - 2)) {
 						console.log(i)
 						
-						i++
 						console.log(i)
+						++i
 						outPut(_line10[i], _line10[i + 1])
 	
 					} else if(i == (_line10.length-2)) {
@@ -111,6 +105,7 @@
 						console.log(lineList)
 						console.log(LineList)
 						finished = true
+						return
 					}
 				}
 
@@ -151,27 +146,26 @@
 									//									console.log(lineList)
 									//合规的描点数据
 									plans[i].segments[j].transit.path.forEach(function(value, index, arr) {
-									  // ...
-									  console.log(value)
-									  console.log(index)
-									  console.log(arr)
-									  console.log(arr[index])
-									  console.log(typeof arr[index])
-									  lineList.push([value.lng, value.lat])
+//									  console.log(value)
+									  console.log(LineList)
+									  console.log([value.lng,value.lat])
+									  console.log(LineList)
+									  lineList.push([value.lng,value.lat])
+									  LineList.push([value.lng,value.lat])
 									})
 //									for(var item = 0; item < plans[i].segments[j].transit.path.length; item++) {
 //										console.log(plans[i].segments[j].transit.path.length)
 ////										if(item == 0){
 ////											lineList.push([plans[i].segments[j].transit.path[0].lng, plans[i].segments[j].transit.path[0].lat])											
-////										}
+////										
 //										
 //									}
 //									console.log(lineList)
 									//合规的描点数据-----集合
-									for(var keys = 0; keys < lineList.length; keys++) {
-										LineList.push([lineList[keys].lng, lineList[keys].lat])
-										
-									}
+//									for(var keys = 0; keys < lineList.length; keys++) {
+//										LineList.push([lineList[keys].lng, lineList[keys].lat])
+//										
+//									}
 									editor._line(lineList)
 									return
 
@@ -182,7 +176,7 @@
 					}
 				}
 
-				console.log(flag++)
+//				console.log(flag++)
 
 			});
 		}

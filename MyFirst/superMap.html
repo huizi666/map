@@ -10,7 +10,7 @@
 	    <script type="text/javascript">
 	    //声明变量map、layer、url
 	    var map, layer,
-	    url = "http://172.17.1.20:8090/iserver/services/map-world/rest/maps/World";
+	    url = "http://172.17.1.20:8090/iserver/services/map-china400/rest/maps/China_4326";
 	    //创建地图控件
 	    function init() {
 	        map = new SuperMap.Map ("map");
@@ -24,7 +24,7 @@
 	        //将Layer图层加载到Map对象上
 	        map.addLayer(layer);
 	        //出图，map.setCenter函数显示地图
-	        map.setCenter(new SuperMap.LonLat(116.404, 39.915), 10);        
+	        map.setCenter(new SuperMap.LonLat(116.3913836995125, 39.907253214522164), 12);        
 	    }
 	    </script>
 	</head>
