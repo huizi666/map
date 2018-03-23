@@ -1,36 +1,124 @@
 <!DOCTYPE html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<title>超图</title>
+		<style type="text/css">
+			body {
+				margin: 0;
+				overflow: hidden;
+				background: #fff;
+			}
+			
+			#map {
+				position: relative;
+				height: 510px;
+				border: 1px solid #3473b7;
+			}
+			
+			#toolbar {
+				position: relative;
+				padding-top: 5px;
+				padding-bottom: 10px;
+			}
+		</style>
 		<!--坐标转换-->
 		<script src="index.js" type="text/javascript" charset="utf-8"></script>
 		<!--引用需要的脚本-->
-	    <script src="./libs/SuperMap.Include.js"></script>
-	    <script type="text/javascript">
-	    //声明变量map、layer、url
-	    var map, layer,
-	    url = "http://172.17.1.20:8090/iserver/services/map-china400/rest/maps/China_4326";
-	    //创建地图控件
-	    function init() {
-	        map = new SuperMap.Map ("map");
-	        //创建分块动态REST图层，该图层显示iserver 8C 服务发布的地图,
-	        //其中"world"为图层名称，url图层的服务地址，{transparent: true}设置到url的可选参数
-	        layer = new SuperMap.Layer.TiledDynamicRESTLayer("World", url, 
-	        null, {maxResolution:"auto"});
-	        layer.events.on({"layerInitialized": addLayer});          
-	    }             
-	    function addLayer() {
-	        //将Layer图层加载到Map对象上
-	        map.addLayer(layer);
-	        //出图，map.setCenter函数显示地图
-	        map.setCenter(new SuperMap.LonLat(116.3913836995125, 39.907253214522164), 12);        
-	    }
-	    </script>
+		<script src="./libs/SuperMap.Include.js"></script>
+		<script type="text/javascript">
+			//声明变量map、layer、url
+			var map, layer, pointVector, dataAdded = false,
+				url = "http://172.17.1.20:8090/iserver/services/map-china400/rest/maps/China_4326";
+
+			function init() {
+				map = new SuperMap.Map("map", {
+					controls: [
+						new SuperMap.Control.Zoom(),
+						new SuperMap.Control.Navigation(),
+						new SuperMap.Control.LayerSwitcher()
+					]
+				});
+				layer = new SuperMap.Layer.TiledDynamicRESTLayer("World", url, null, {
+					maxResolution: "auto"
+				});
+				layer.events.on({
+					"layerInitialized": addLayer
+				});
+				vector = new SuperMap.Layer.Vector("vector");
+				addData();
+			}
+
+			function addLayer() {
+
+				map.addLayers([layer, vector]);
+				//显示地图范围
+				map.setCenter(new SuperMap.LonLat(119, 36), 0);
+			}
+
+			function addData() {
+				if(!dataAdded) {
+					vector.removeAllFeatures();
+					//点对象
+					var point = new SuperMap.Geometry.Point(0, 0);
+					var pointVector = new SuperMap.Feature.Vector(point);
+					pointVector.style = {
+						fillColor: "red",
+						strokeColor: "yellow",
+						pointRadius: 6
+					};
+
+					//线串几何对象
+					var points2 = [
+						new SuperMap.Geometry.Point(0, 29.4),
+						new SuperMap.Geometry.Point(-50, 39.4),
+						new SuperMap.Geometry.Point(-30, 19.4),
+						new SuperMap.Geometry.Point(100, 49.4)
+					];
+					var line1 = new SuperMap.Geometry.LineString(points2);
+					var linecVector = new SuperMap.Feature.Vector(line1);
+					linecVector.style = {
+						strokeColor: "#7B68EE",
+						strokeWidth: 2
+					};
+					//几何对象线环类
+					var points1 = [];
+					points1.push(new SuperMap.Geometry.Point(116.29561, 39.972383));
+					points1.push(new SuperMap.Geometry.Point(116.29561, 39.972383));
+					points1.push(new SuperMap.Geometry.Point(116.300511, 39.980463));
+					console.log(new SuperMap.Geometry.Point(116.29561, 39.972383))
+					console.log(points1)
+					var line = new SuperMap.Geometry.LinearRing(points1);
+					var lineVector = new SuperMap.Feature.Vector(line);
+					lineVector.style = {
+						strokeColor: "#C0FF3E",
+						fill: false,
+						strokeWidth: 2
+					};
+
+					vector.addFeatures([pointVector, lineVector, linecVector]);
+					dataAdded = true;
+				} else {
+					alert("数据已加载。");
+				}
+			}
+
+			function removeData() {
+				dataAdded = false;
+				vector.removeAllFeatures();
+				vector.refresh();
+			}
+		</script>
 	</head>
+
 	<body onload="init()">
-	<!--地图显示的div-->
-    <div id="map" style="position:absolute;left:0px;right:0px;width:800px;height:500px;" >             
-    </div> 
+		<div id="toolbar">
+			<input type="button" class="btn" value="加载数据" onclick="addData()" />
+			<input type="button" class="btn" value="移除数据" onclick="removeData()" />
+		</div>
+		<div id="map"></div>
+
 	</body>
+
 </html>

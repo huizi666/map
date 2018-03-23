@@ -18,8 +18,10 @@
 <!--引用需要的脚本-->
 <script src="./libs/SuperMap.Include.js"></script>
 </head>
-<body>
+<body onload="init()">
 	<input type="text" name="" id="" value="" placeholder="请输入站点" />
+	<input type="button" class="btn" value="加载数据" onclick="addData()" />
+	<input type="button" class="btn" value="移除数据" onclick="removeData()" />
 	<button onclick="outputLine()">生成</button>
 	<div>1：高德   2：百度  3： 超图</div>
 	<div id="">
@@ -96,6 +98,9 @@ editor._line = function(shortLine) {
 			outPut1(_line10[lineIndexG], _line10[lineIndexG + 1])
 		} else if(lineIndexG == (_line10.length-2)) {
 			console.log(lineIndexG+'6666666666666666666666666666666')
+			console.log(lineList1)
+			localStorage.removeItem('gaode')
+			localStorage.setItem('gaode',JSON.stringify(lineList1))
 			return
 		}
 	}
@@ -130,8 +135,10 @@ function outPut1(orig, des) {
 					plans[index].segments.forEach(function(value,index,segments){//plans --> segments
 						if(segments[index].transit_mode === 'SUBWAY'){
 							segments[index].transit.path.forEach(function(value,index,paths){
+//								console.log(paths[index])
 									shortLine.push([paths[index].lng,paths[index].lat])											
-									lineList1.push([paths[index].lng,paths[index].lat])											
+//									lineList1.push(paths[index].lng,paths[index].lat])											
+									lineList1.push(paths[index])											
 //											LineList1.push([paths[index].lng,paths[index].lat])
 							})
 							editor._line(shortLine)
@@ -223,7 +230,7 @@ function outPut2 (start,end){
 	var routePolicy = [BMAP_TRANSIT_POLICY_LEAST_TIME,BMAP_TRANSIT_POLICY_LEAST_TRANSFER,BMAP_TRANSIT_POLICY_LEAST_WALKING,BMAP_TRANSIT_POLICY_AVOID_SUBWAYS];
 	var transit = new BMap.TransitRoute(
 		map2
-		, {renderOptions: {map: map2, autoViewport: false,policy:BMAP_TRANSIT_POLICY_LEAST_TRANSFER}
+		, {renderOptions: {autoViewport: false,policy:BMAP_TRANSIT_POLICY_LEAST_TRANSFER}
 		,onSearchComplete: function(result){
 			if (transit.getStatus() == BMAP_STATUS_SUCCESS){
 				var firstPlan = result.getPlan(0);
@@ -243,6 +250,9 @@ function outPut2 (start,end){
 							GPSset.push(gpsset[idx])
 						})
 					})
+					console.log(GPSsets)
+					localStorage.removeItem('baidu')
+					localStorage.setItem('baidu',JSON.stringify(GPSsets))
 					var polyline = new BMap.Polyline(GPSset
 					, {strokeColor:"pink", strokeWeight:1, strokeOpacity:1});   //创建折线
 					map2.addOverlay(polyline);
@@ -256,24 +266,85 @@ function outPut2 (start,end){
 </script>
 <!--3:超图-->
 <script type="text/javascript">
-//声明变量map、layer、url
-var map, layer,
-url = "http://172.17.1.20:8090/iserver/services/map-world/rest/maps/World";
-//创建地图控件
-function init() {
-    map = new SuperMap.Map ("container3");
-    //创建分块动态REST图层，该图层显示iserver 8C 服务发布的地图,
-    //其中"world"为图层名称，url图层的服务地址，{transparent: true}设置到url的可选参数
-    layer = new SuperMap.Layer.TiledDynamicRESTLayer("World", url, 
-    null, {maxResolution:"auto"});
-    layer.events.on({"layerInitialized": addLayer});          
-}             
-function addLayer() {
-    //将Layer图层加载到Map对象上
-    map.addLayer(layer);
-    //出图，map.setCenter函数显示地图
-    map.setCenter(new SuperMap.LonLat(116.404, 39.915), 10);        
-}
-init()
-</script>
+			//声明变量map、layer、url
+			var map, layer, pointVector, dataAdded = false,
+				url = "http://172.17.1.20:8090/iserver/services/map-china400/rest/maps/China_4326";
+
+			function init() {
+				map = new SuperMap.Map("container3", {
+					controls: [
+						new SuperMap.Control.Zoom(),
+						new SuperMap.Control.Navigation(),
+						new SuperMap.Control.LayerSwitcher()
+					]
+				});
+				layer = new SuperMap.Layer.TiledDynamicRESTLayer("World", url, null, {
+					maxResolution: "auto"
+				});
+				layer.events.on({
+					"layerInitialized": addLayer
+				});
+				vector = new SuperMap.Layer.Vector("vector");
+				//addData();
+			}
+
+			function addLayer() {
+
+				map.addLayers([layer, vector]);
+				//显示地图范围
+				map.setCenter(new SuperMap.LonLat(119, 36), 0);
+			}
+
+			function addData() {
+				var baidu = JSON.parse(localStorage.getItem('baidu'))
+				var gaode = JSON.parse(localStorage.getItem('gaode'))
+//				console.log(baidu)
+				console.log(gaode)
+				if(!dataAdded) {
+					vector.removeAllFeatures();
+//					//点对象
+//					var point = new SuperMap.Geometry.Point(0, 0);
+//					var pointVector = new SuperMap.Feature.Vector(point);
+//					pointVector.style = {
+//						fillColor: "red",
+//						strokeColor: "yellow",
+//						pointRadius: 6
+//					};
+					var points2 = []
+					baidu.forEach(function(val,idx,BD){
+						BD[idx].forEach(function(val,idx,BDChild){
+							points2.push(new SuperMap.Geometry.Point(BDChild[idx].lng, BDChild[idx].lat))
+						})
+					})
+//					gaode.forEach(function(val,idx,GD){
+//						points2.push(new SuperMap.Geometry.Point(GD[idx].lng, GD[idx].lat))
+//						
+//					})
+					//线串几何对象
+//					var points2 = [
+//						new SuperMap.Geometry.Point(0, 29.4),
+//						new SuperMap.Geometry.Point(-50, 39.4),
+//						new SuperMap.Geometry.Point(-30, 19.4),
+//						new SuperMap.Geometry.Point(100, 49.4)
+//					];
+					var line1 = new SuperMap.Geometry.LineString(points2);
+					var linecVector = new SuperMap.Feature.Vector(line1);
+					linecVector.style = {
+						strokeColor: "black",
+						strokeWidth: 2
+					};
+
+					vector.addFeatures([/*pointVector, lineVector,*/ linecVector]);
+					dataAdded = true;
+				} else {
+					alert("数据已加载。");
+				}
+			}
+
+			function removeData() {
+				dataAdded = false;
+				vector.removeAllFeatures();
+				vector.refresh();
+			}
+		</script>
 </html>
